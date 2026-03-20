@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../business/auth/boundary/auth_bloc.dart';
 import 'screens/auth_screen.dart';
+import 'screens/legal_consent_screen.dart';
 
-class PlatformaTreningowaApp extends StatelessWidget {
+class PlatformaTreningowaApp extends StatefulWidget {
   const PlatformaTreningowaApp({super.key});
+
+  @override
+  State<PlatformaTreningowaApp> createState() => _PlatformaTreningowaAppState();
+}
+
+class _PlatformaTreningowaAppState extends State<PlatformaTreningowaApp> {
+  DateTime? acceptedAt;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +23,23 @@ class PlatformaTreningowaApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const AuthScreen(),
+      home: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final authResult = state.authResult;
+          if (authResult != null && !authResult.legalConsentsAccepted) {
+            return LegalConsentScreen(
+              authResult: authResult,
+              onCompleted: (acceptedAtValue) {
+                setState(() {
+                  acceptedAt = acceptedAtValue;
+                });
+                context.read<AuthBloc>().add(const AuthLegalConsentsAccepted());
+              },
+            );
+          }
+          return AuthScreen(acceptedAt: acceptedAt, authResultOverride: authResult);
+        },
+      ),
     );
   }
 }

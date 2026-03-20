@@ -1,5 +1,6 @@
 package pl.platformatreningowa.auth.control;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -31,9 +32,22 @@ public class JwtService {
                 .subject(String.valueOf(user.getId()))
                 .claim("email", user.getEmail())
                 .claim("onboardingCompleted", user.isOnboardingCompleted())
+                .claim("legalConsentsAccepted", user.hasAcceptedRequiredConsents())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(expirationMinutes, ChronoUnit.MINUTES)))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public Claims parseToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public Long extractUserId(String token) {
+        return Long.parseLong(parseToken(token).getSubject());
     }
 }

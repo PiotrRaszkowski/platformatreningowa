@@ -23,17 +23,17 @@ void main() {
     );
 
     blocTest<AuthBloc, AuthState>(
-      'logs in existing user and returns dashboard redirect',
+      'registers new user and redirects to legal consents',
       build: () => AuthBloc(AuthRepository()),
-      seed: () => const AuthState(mode: AuthMode.login, isSubmitting: false),
       act: (bloc) => bloc.add(const AuthSubmitted(
-        email: 'existing.runner@example.com',
+        email: 'new.runner@example.com',
         password: 'password123',
+        confirmPassword: 'password123',
       )),
       wait: const Duration(milliseconds: 200),
       expect: () => [
-        const AuthState(mode: AuthMode.login, isSubmitting: true),
-        predicate<AuthState>((state) => state.authResult?.redirectTo == '/dashboard' && state.isSubmitting == false),
+        const AuthState(mode: AuthMode.register, isSubmitting: true),
+        predicate<AuthState>((state) => state.authResult?.redirectTo == '/legal-consents' && state.isSubmitting == false),
       ],
     );
   });

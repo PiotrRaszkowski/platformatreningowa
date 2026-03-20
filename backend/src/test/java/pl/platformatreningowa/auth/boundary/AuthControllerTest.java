@@ -33,7 +33,7 @@ class AuthControllerTest {
     @Test
     void registerReturnsCreated() throws Exception {
         given(authService.register(new RegisterRequest("runner@example.com", "password123", "password123")))
-                .willReturn(new AuthResponse("jwt-token", "runner@example.com", false, "/onboarding"));
+                .willReturn(new AuthResponse("jwt-token", "runner@example.com", false, false, "/legal-consents"));
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -41,7 +41,8 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.token").value("jwt-token"))
-                .andExpect(jsonPath("$.redirectTo").value("/onboarding"));
+                .andExpect(jsonPath("$.legalConsentsAccepted").value(false))
+                .andExpect(jsonPath("$.redirectTo").value("/legal-consents"));
     }
 
     @Test
@@ -56,7 +57,7 @@ class AuthControllerTest {
     @Test
     void loginReturnsOk() throws Exception {
         given(authService.login(new LoginRequest("runner@example.com", "password123")))
-                .willReturn(new AuthResponse("jwt-token", "runner@example.com", true, "/dashboard"));
+                .willReturn(new AuthResponse("jwt-token", "runner@example.com", true, true, "/dashboard"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

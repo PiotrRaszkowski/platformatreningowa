@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,39 +29,52 @@ class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private PasswordEncoder passwordEncoder;
+
     @Mock
     private JwtService jwtService;
 
     @InjectMocks
     private AuthService authService;
 
+    @Captor
+    private ArgumentCaptor<UserEntity> userCaptor;
+
     private UserEntity user;
 
     @BeforeEach
     void setUp() {
         user = new UserEntity();
-        user.setId(1L);
+        user.setId(7L);
         user.setEmail("runner@example.com");
-        user.setPasswordHash("hashed-password");
+        user.setPasswordHash("encoded-password");
         user.setOnboardingCompleted(false);
+        user.setTermsAccepted(false);
+        user.setHealthStatementAccepted(false);
+        user.setPrivacyPolicyAccepted(false);
     }
 
     @Test
-    void registerCreatesUserAndReturnsOnboardingRedirect() {
+    void registerCreatesUserAndReturnsLegalConsentRedirect() {
         RegisterRequest request = new RegisterRequest("Runner@Example.com", "password123", "password123");
         given(userRepository.existsByEmailIgnoreCase("runner@example.com")).willReturn(false);
-        given(passwordEncoder.encode("password123")).willReturn("hashed-password");
-        given(userRepository.save(any(UserEntity.class))).willReturn(user);
-        given(jwtService.generateToken(user)).willReturn("jwt-token");
+        given(passwordEncoder.encode("password123")).willReturn("encoded-password");
+        given(userRepository.save(any(UserEntity.class))).willAnswer(invocation -> {
+            UserEntity saved = invocation.getArgument(0);
+            saved.setId(7L);
+            return saved;
+        });
+        given(jwtService.generateToken(any(UserEntity.class))).willReturn("jwt-token");
 
         AuthResponse response = authService.register(request);
 
-        assertThat(response.token()).isEqualTo("jwt-token");
-        assertThat(response.email()).isEqualTo("runner@example.com");
-        assertThat(response.redirectTo()).isEqualTo("/onboarding");
-        verify(userRepository).save(any(UserEntity.class));
+        verify(userRepository).save(userCaptor.capture());
+        assertThat(userCaptor.getValue().isTermsAccepted()).isFalse();
+        assertThat(userCaptor.getValue().getLegalAcceptedAt()).isNull();
+        assertThat(response.redirectTo()).isEqualTo("/legal-consents");
+        assertThat(response.legalConsentsAccepted()).isFalse();
     }
 
     @Test
@@ -82,22 +97,40 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginReturnsDashboardRedirectForCompletedOnboarding() {
-        user.setOnboardingCompleted(true);
+    void loginReturnsLegalConsentRedirectWhenConsentsMissing() {
         given(userRepository.findByEmailIgnoreCase("runner@example.com")).willReturn(Optional.of(user));
-        given(passwordEncoder.matches("password123", "hashed-password")).willReturn(true);
+        given(passwordEncoder.matches("password123", "encoded-password")).willReturn(true);
         given(jwtService.generateToken(user)).willReturn("jwt-token");
 
         AuthResponse response = authService.login(new LoginRequest("runner@example.com", "password123"));
 
-        assertThat(response.redirectTo()).isEqualTo("/dashboard");
+        assertThat(response.onboardingCompleted()).isFalse();
+        assertThat(response.legalConsentsAccepted()).isFalse();
+        assertThat(response.redirectTo()).isEqualTo("/legal-consents");
+    }
+
+    @Test
+    void loginReturnsDashboardRedirectForCompletedOnboardingAndConsents() {
+        user.setOnboardingCompleted(true);
+        user.setTermsAccepted(true);
+        user.setHealthStatementAccepted(true);
+        user.setPrivacyPolicyAccepted(true);
+        user.setLegalAcceptedAt(java.time.Instant.parse("2026-03-20T12:00:00Z"));
+        given(userRepository.findByEmailIgnoreCase("runner@example.com")).willReturn(Optional.of(user));
+        given(passwordEncoder.matches("password123", "encoded-password")).willReturn(true);
+        given(jwtService.generateToken(user)).willReturn("jwt-token");
+
+        AuthResponse response = authService.login(new LoginRequest("runner@example.com", "password123"));
+
         assertThat(response.onboardingCompleted()).isTrue();
+        assertThat(response.legalConsentsAccepted()).isTrue();
+        assertThat(response.redirectTo()).isEqualTo("/dashboard");
     }
 
     @Test
     void loginRejectsInvalidPassword() {
         given(userRepository.findByEmailIgnoreCase("runner@example.com")).willReturn(Optional.of(user));
-        given(passwordEncoder.matches("wrong-password", "hashed-password")).willReturn(false);
+        given(passwordEncoder.matches("wrong-password", "encoded-password")).willReturn(false);
 
         assertThatThrownBy(() -> authService.login(new LoginRequest("runner@example.com", "wrong-password")))
                 .isInstanceOf(UnauthorizedException.class)

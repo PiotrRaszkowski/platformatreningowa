@@ -34,6 +34,10 @@ public class AuthService {
         user.setEmail(normalizedEmail);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setOnboardingCompleted(false);
+        user.setTermsAccepted(false);
+        user.setHealthStatementAccepted(false);
+        user.setPrivacyPolicyAccepted(false);
+        user.setLegalAcceptedAt(null);
 
         UserEntity savedUser = userRepository.save(user);
         return toAuthResponse(savedUser);
@@ -58,11 +62,14 @@ public class AuthService {
     }
 
     private AuthResponse toAuthResponse(UserEntity user) {
+        boolean legalConsentsAccepted = user.hasAcceptedRequiredConsents();
+        String redirectTo = !legalConsentsAccepted ? "/legal-consents" : user.isOnboardingCompleted() ? "/dashboard" : "/onboarding";
         return new AuthResponse(
                 jwtService.generateToken(user),
                 user.getEmail(),
                 user.isOnboardingCompleted(),
-                user.isOnboardingCompleted() ? "/dashboard" : "/onboarding"
+                legalConsentsAccepted,
+                redirectTo
         );
     }
 }
