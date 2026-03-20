@@ -43,7 +43,7 @@ void main() {
     blocTest<ProfileBloc, ProfileState>(
       'returns password validation error for wrong current password',
       build: () => ProfileBloc(ProfileRepository()),
-      seed: () => ProfileState.initial().copyWith(isLoading: false),
+      seed: () => const ProfileState(isLoading: false),
       act: (bloc) => bloc.add(const ProfilePasswordChangeSubmitted(
         currentPassword: 'bad-password',
         newPassword: 'newPassword123',
