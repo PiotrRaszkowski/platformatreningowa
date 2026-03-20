@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app/platforma_treningowa_app.dart';
-import 'business/health/boundary/health_bloc.dart';
-import 'business/health/control/health_repository.dart';
+import 'business/auth/boundary/auth_bloc.dart';
+import 'business/auth/control/auth_repository.dart';
 
 void main() {
   runApp(const PlatformaTreningowaBootstrap());
@@ -15,9 +15,9 @@ class PlatformaTreningowaBootstrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (_) => const HealthRepository(),
+      create: (_) => AuthRepository(),
       child: BlocProvider(
-        create: (context) => HealthBloc(context.read<HealthRepository>())..add(const HealthStarted()),
+        create: (context) => AuthBloc(context.read<AuthRepository>()),
         child: const PlatformaTreningowaApp(),
       ),
     );

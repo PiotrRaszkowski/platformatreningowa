@@ -1,6 +1,18 @@
 spring:
   application:
     name: platforma-treningowa-backend
+  datasource:
+    url: jdbc:h2:mem:platforma-treningowa;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
 management:
   endpoints:
     web:
@@ -8,3 +20,6 @@ management:
         include: health,info
 app:
   version: 0.0.1-SNAPSHOT
+  security:
+    jwt-secret: 01234567890123456789012345678901
+    jwt-expiration-minutes: 60
