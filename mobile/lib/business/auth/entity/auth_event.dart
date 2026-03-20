@@ -30,3 +30,7 @@ final class AuthSubmitted extends AuthEvent {
 final class AuthLegalConsentsAccepted extends AuthEvent {
   const AuthLegalConsentsAccepted();
 }
+
+final class AuthOnboardingCompleted extends AuthEvent {
+  const AuthOnboardingCompleted();
+}
