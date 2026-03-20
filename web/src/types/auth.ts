@@ -8,5 +8,6 @@ export interface AuthResponse {
   token: string;
   email: string;
   onboardingCompleted: boolean;
-  redirectTo: '/onboarding' | '/dashboard';
+  legalConsentsAccepted: boolean;
+  redirectTo: '/legal-consents' | '/onboarding' | '/dashboard';
 }

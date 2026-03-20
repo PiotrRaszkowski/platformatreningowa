@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../business/auth/boundary/auth_bloc.dart';
+import '../../business/auth/entity/auth_result.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  const AuthScreen({super.key, this.acceptedAt, this.authResultOverride});
+
+  final DateTime? acceptedAt;
+  final AuthResult? authResultOverride;
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -28,6 +32,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final isRegister = state.mode == AuthMode.register;
+        final authResult = widget.authResultOverride ?? state.authResult;
         return Scaffold(
           appBar: AppBar(title: const Text('Platforma Treningowa')),
           body: Center(
@@ -62,13 +67,16 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 16),
                       Text(state.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                     ],
-                    if (state.authResult != null) ...[
+                    if (authResult != null && authResult.legalConsentsAccepted) ...[
                       const SizedBox(height: 16),
                       Card(
                         color: Colors.green.shade50,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
-                          child: Text('Zalogowano jako ${state.authResult!.email}. Redirect: ${state.authResult!.redirectTo}'),
+                          child: Text(
+                            'Zalogowano jako ${authResult.email}. Redirect: ${authResult.redirectTo}'
+                            '${widget.acceptedAt != null ? '\nZgody zaakceptowane: ${widget.acceptedAt!.toIso8601String()}' : ''}',
+                          ),
                         ),
                       ),
                     ],

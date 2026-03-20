@@ -15,6 +15,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final AuthRepository _repository;
 
+  void emitLegalConsentsAccepted() {
+    final authResult = state.authResult;
+    if (authResult == null) {
+      return;
+    }
+    emit(state.copyWith(
+      authResult: authResult.copyWith(legalConsentsAccepted: true, redirectTo: '/onboarding'),
+      clearError: true,
+    ));
+  }
+
   void _onModeChanged(AuthModeChanged event, Emitter<AuthState> emit) {
     emit(state.copyWith(mode: event.mode, clearError: true, clearResult: true));
   }

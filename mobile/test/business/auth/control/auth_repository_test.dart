@@ -3,7 +3,7 @@ import 'package:platforma_treningowa_mobile/business/auth/control/auth_repositor
 
 void main() {
   group('AuthRepository', () {
-    test('register returns onboarding redirect for new user', () async {
+    test('register returns legal consent redirect for new user', () async {
       final repository = AuthRepository();
 
       final result = await repository.register(
@@ -12,8 +12,9 @@ void main() {
         confirmPassword: 'password123',
       );
 
-      expect(result.redirectTo, '/onboarding');
+      expect(result.redirectTo, '/legal-consents');
       expect(result.onboardingCompleted, false);
+      expect(result.legalConsentsAccepted, false);
     });
 
     test('login returns dashboard redirect for existing completed user', () async {
@@ -26,6 +27,7 @@ void main() {
 
       expect(result.redirectTo, '/dashboard');
       expect(result.onboardingCompleted, true);
+      expect(result.legalConsentsAccepted, true);
     });
   });
 }

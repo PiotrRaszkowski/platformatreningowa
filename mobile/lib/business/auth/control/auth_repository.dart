@@ -3,8 +3,8 @@ import '../entity/auth_result.dart';
 class AuthRepository {
   AuthRepository();
 
-  final Map<String, ({String password, bool onboardingCompleted})> _users = {
-    'existing.runner@example.com': (password: 'password123', onboardingCompleted: true),
+  final Map<String, ({String password, bool onboardingCompleted, bool legalConsentsAccepted})> _users = {
+    'existing.runner@example.com': (password: 'password123', onboardingCompleted: true, legalConsentsAccepted: true),
   };
 
   Future<AuthResult> register({required String email, required String password, required String confirmPassword}) async {
@@ -12,14 +12,15 @@ class AuthRepository {
     if (_users.containsKey(normalizedEmail)) {
       throw Exception('Użytkownik z tym adresem e-mail już istnieje.');
     }
-    _users[normalizedEmail] = (password: password, onboardingCompleted: false);
+    _users[normalizedEmail] = (password: password, onboardingCompleted: false, legalConsentsAccepted: false);
     return Future<AuthResult>.delayed(
       const Duration(milliseconds: 150),
       () => AuthResult(
         email: normalizedEmail,
         token: 'mock-token-$normalizedEmail',
         onboardingCompleted: false,
-        redirectTo: '/onboarding',
+        legalConsentsAccepted: false,
+        redirectTo: '/legal-consents',
       ),
     );
   }
@@ -36,7 +37,8 @@ class AuthRepository {
         email: normalizedEmail,
         token: 'mock-token-$normalizedEmail',
         onboardingCompleted: user.onboardingCompleted,
-        redirectTo: user.onboardingCompleted ? '/dashboard' : '/onboarding',
+        legalConsentsAccepted: user.legalConsentsAccepted,
+        redirectTo: user.legalConsentsAccepted ? (user.onboardingCompleted ? '/dashboard' : '/onboarding') : '/legal-consents',
       ),
     );
   }

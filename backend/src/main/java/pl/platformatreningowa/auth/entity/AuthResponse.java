@@ -4,6 +4,7 @@ public record AuthResponse(
         String token,
         String email,
         boolean onboardingCompleted,
+        boolean legalConsentsAccepted,
         String redirectTo
 ) {
 }
