@@ -15,9 +15,8 @@ void main() {
         ..add(const LegalConsentSubmitted()),
       wait: const Duration(milliseconds: 250),
       expect: () => [
-        predicate<LegalConsentBlocState>((state) => state.token == 'mock-token-new.runner@example.com'),
-        predicate<LegalConsentBlocState>((state) => state.consent.termsAccepted),
-        predicate<LegalConsentBlocState>((state) => state.consent.healthStatementAccepted),
+        predicate<LegalConsentBlocState>((state) => state.consent.termsAccepted && !state.consent.healthStatementAccepted),
+        predicate<LegalConsentBlocState>((state) => state.consent.termsAccepted && state.consent.healthStatementAccepted),
         predicate<LegalConsentBlocState>((state) => state.isSubmitting),
         predicate<LegalConsentBlocState>((state) => state.errorMessage == 'Zaakceptuj regulamin, oświadczenie zdrowotne i RODO.'),
       ],
