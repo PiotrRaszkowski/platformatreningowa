@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+*.tsbuildinfo
+*.d.ts.map
+vite.config.d.ts
+vite.config.js
+vitest.config.d.ts

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: platforma-treningowa-backend
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+app:
+  version: 0.0.1-SNAPSHOT
