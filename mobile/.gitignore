@@ -1,0 +1,9 @@
+.dart_tool/
+.packages
+.pub/
+build/
+ios/Flutter/.last_build_id
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+android/.gradle/
+android/local.properties
