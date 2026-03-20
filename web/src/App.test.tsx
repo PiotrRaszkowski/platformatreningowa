@@ -20,6 +20,7 @@ describe('App onboarding flows', () => {
     await user.click(screen.getByLabelText(/Akceptuję regulamin platformy/i));
     await user.click(screen.getByLabelText(/Oświadczam, że biorę odpowiedzialność/i));
     await user.click(screen.getByLabelText(/Akceptuję politykę prywatności/i));
+    await waitFor(() => expect(screen.getByRole('button', { name: /Akceptuję i kontynuuję/i })).toBeEnabled());
     await user.click(screen.getByRole('button', { name: /Akceptuję i kontynuuję/i }));
 
     expect(await screen.findByText(/Ankieta startowa/i)).toBeInTheDocument();

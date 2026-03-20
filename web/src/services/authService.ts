@@ -1,6 +1,7 @@
 import type { AuthRequest, AuthResponse } from '../types/auth';
 import type { LegalConsentState, SaveLegalConsentRequest } from '../types/legalConsent';
 import type { OnboardingProfile, SaveOnboardingProfileRequest } from '../types/onboarding';
+import type { UserProfile, UpdateProfileRequest, ChangePasswordRequest } from '../types/profile';
 
 type MockUser = {
   password: string;
@@ -100,6 +101,51 @@ export async function saveOnboardingProfile(token: string, request: SaveOnboardi
   return { ...user.profile, trainingDays: [...user.profile.trainingDays], availableEquipment: [...user.profile.availableEquipment] };
 }
 
+
+export async function getUserProfile(token: string): Promise<UserProfile> {
+  const user = registeredUsers.get(getEmailFromToken(token));
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
+  const p = user.profile;
+  return delay({
+    email: getEmailFromToken(token),
+    age: p.age,
+    sex: p.sex,
+    weight: p.weight,
+    height: p.height,
+    bodyType: p.bodyType,
+    activityHistory: p.activityHistory,
+    trainingDays: [...p.trainingDays],
+    goal: p.goal,
+    targetDistance: p.targetDistance,
+    targetTime: p.targetTime,
+    foodIntolerances: p.foodIntolerances,
+    availableEquipment: [...p.availableEquipment],
+  });
+}
+
+export async function updateUserProfile(token: string, request: UpdateProfileRequest): Promise<UserProfile> {
+  const user = registeredUsers.get(getEmailFromToken(token));
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
+  user.profile = {
+    ...user.profile,
+    weight: String(request.weight),
+    trainingDays: [...request.trainingDays],
+    goal: request.goal,
+    foodIntolerances: request.foodIntolerances,
+    availableEquipment: [...request.availableEquipment],
+  };
+  return getUserProfile(token);
+}
+
+export async function changePassword(token: string, request: ChangePasswordRequest): Promise<void> {
+  const user = registeredUsers.get(getEmailFromToken(token));
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
+  if (user.password !== request.currentPassword) throw new Error('Nieprawidłowe aktualne hasło.');
+  if (request.newPassword !== request.confirmNewPassword) throw new Error('Nowe hasła muszą być identyczne.');
+  if (request.newPassword.length < 8) throw new Error('Nowe hasło musi mieć co najmniej 8 znaków.');
+  user.password = request.newPassword;
+  await delay(undefined);
+}
 
 export function seedAuthUser(email: string, password: string, onboardingCompleted: boolean, legalConsentsAccepted = true): void {
   registeredUsers.set(email.trim().toLowerCase(), {

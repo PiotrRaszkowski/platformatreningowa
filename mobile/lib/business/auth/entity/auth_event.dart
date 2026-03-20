@@ -34,3 +34,7 @@ final class AuthLegalConsentsAccepted extends AuthEvent {
 final class AuthOnboardingCompleted extends AuthEvent {
   const AuthOnboardingCompleted();
 }
+
+final class AuthLoggedOut extends AuthEvent {
+  const AuthLoggedOut();
+}
