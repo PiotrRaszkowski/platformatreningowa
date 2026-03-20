@@ -69,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       final error = bloc.validate(state.profile, state.step);
                       if (state.step < 2) {
                         if (error != null) {
-                          bloc.add(OnboardingSubmitted());
+                          bloc.add(const OnboardingSubmitted());
                         } else {
                           bloc.add(OnboardingStepChanged(state.step + 1));
                         }
@@ -129,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget dropdown(String label, String value, List<String> options, ValueChanged<String?> onChanged) => DropdownButtonFormField<String>(
     decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
-    value: value.isEmpty ? null : value,
+    initialValue: value.isEmpty ? null : value,
     items: options.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
     onChanged: onChanged,
   );

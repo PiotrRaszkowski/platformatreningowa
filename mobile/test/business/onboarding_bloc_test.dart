@@ -16,7 +16,7 @@ void main() {
     blocTest<OnboardingBloc, OnboardingState>(
       'saves completed onboarding profile',
       build: () => OnboardingBloc(OnboardingRepository()),
-      seed: () => OnboardingState(profile: const OnboardingProfile(age: 31, sex: 'mężczyzna', weight: '76.5', height: '182', bodyType: 'średni', activityHistory: 'regularnie', trainingDays: ['MON', 'WED'], goal: 'biegać szybciej', targetDistance: '10', targetTime: '50:00', foodIntolerances: 'laktoza', availableEquipment: ['gumy']), step: 2),
+      seed: () => const OnboardingState(profile: OnboardingProfile(age: 31, sex: 'mężczyzna', weight: '76.5', height: '182', bodyType: 'średni', activityHistory: 'regularnie', trainingDays: ['MON', 'WED'], goal: 'biegać szybciej', targetDistance: '10', targetTime: '50:00', foodIntolerances: 'laktoza', availableEquipment: ['gumy']), step: 2),
       act: (bloc) => bloc.add(const OnboardingSubmitted()),
       wait: const Duration(milliseconds: 150),
       expect: () => [
