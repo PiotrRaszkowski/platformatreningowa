@@ -78,10 +78,18 @@ Dopiero gdy build jest **zielony**:
    - Linkuj issue (`Closes #{N}`)
 3. Raportuj na Telegram: "✅ PR ready: #{N} {tytuł} → {link}"
 
-### 7. RETURN — Przekaż dalej
+### 7. RETURN — Przekaż dalej (OBOWIĄZKOWE!)
 
-- **Task od Rikera:** Wróć do Rikera — "PR #{pr} gotowy do review"
-- **Task od człowieka:** Wróć do człowieka — "PR #{pr} gotowy, zrobiłem X, Y, Z"
+**Nigdy nie kończ zadania bez aktywnego RETURN!**
+
+- **Task od Rikera:**
+  ```
+  sessions_send(sessionKey="agent:riker:main", message="Issue #N done. PR #X ready: <url>. Gotowy do review.")
+  ```
+- **Task od człowieka:** Odpowiedz w topicu Telegram
+
+Dodatkowo **zawsze** raportuj na Telegram (swój topic):
+- "✅ PR #{X} ready: {link}"
 
 ### 8. REVIEW FEEDBACK — Obsługa uwag z review
 
