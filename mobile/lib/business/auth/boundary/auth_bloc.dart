@@ -12,6 +12,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthModeChanged>(_onModeChanged);
     on<AuthSubmitted>(_onSubmitted);
     on<AuthLegalConsentsAccepted>(_onLegalConsentsAccepted);
+    on<AuthOnboardingCompleted>(_onOnboardingCompleted);
   }
 
   final AuthRepository _repository;
@@ -40,13 +41,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onLegalConsentsAccepted(AuthLegalConsentsAccepted event, Emitter<AuthState> emit) {
     final authResult = state.authResult;
-    if (authResult == null) {
-      return;
-    }
-    emit(state.copyWith(
-      authResult: authResult.copyWith(legalConsentsAccepted: true, redirectTo: '/onboarding'),
-      clearError: true,
-    ));
+    if (authResult == null) return;
+    emit(state.copyWith(authResult: authResult.copyWith(legalConsentsAccepted: true, redirectTo: '/onboarding'), clearError: true));
+  }
+
+  void _onOnboardingCompleted(AuthOnboardingCompleted event, Emitter<AuthState> emit) {
+    final authResult = state.authResult;
+    if (authResult == null) return;
+    emit(state.copyWith(authResult: authResult.copyWith(onboardingCompleted: true, redirectTo: '/dashboard'), clearError: true));
   }
 
   String? _validate(AuthSubmitted event, AuthMode mode) {

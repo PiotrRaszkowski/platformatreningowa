@@ -1,16 +1,34 @@
 import type { AuthRequest, AuthResponse } from '../types/auth';
 import type { LegalConsentState, SaveLegalConsentRequest } from '../types/legalConsent';
+import type { OnboardingProfile, SaveOnboardingProfileRequest } from '../types/onboarding';
 
 type MockUser = {
   password: string;
   onboardingCompleted: boolean;
   consents: LegalConsentState;
+  profile: OnboardingProfile;
+};
+
+const emptyProfile: OnboardingProfile = {
+  age: null,
+  sex: '',
+  weight: '',
+  height: '',
+  bodyType: '',
+  activityHistory: '',
+  trainingDays: [],
+  goal: '',
+  targetDistance: '',
+  targetTime: '',
+  foodIntolerances: '',
+  availableEquipment: [],
+  onboardingCompleted: false
 };
 
 const registeredUsers = new Map<string, MockUser>();
 
 function delay<T>(value: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), 150));
+  return new Promise((resolve) => setTimeout(() => resolve(value), 100));
 }
 
 function createToken(email: string): string {
@@ -33,42 +51,27 @@ function toAuthResponse(email: string, user: MockUser): AuthResponse {
 
 export async function register(request: AuthRequest): Promise<AuthResponse> {
   const email = request.email.trim().toLowerCase();
-  if (registeredUsers.has(email)) {
-    throw new Error('Użytkownik z tym adresem e-mail już istnieje.');
-  }
-
+  if (registeredUsers.has(email)) throw new Error('Użytkownik z tym adresem e-mail już istnieje.');
   const user: MockUser = {
     password: request.password,
     onboardingCompleted: false,
-    consents: {
-      termsAccepted: false,
-      healthStatementAccepted: false,
-      privacyPolicyAccepted: false,
-      acceptedAt: null,
-      completed: false
-    }
+    consents: { termsAccepted: false, healthStatementAccepted: false, privacyPolicyAccepted: false, acceptedAt: null, completed: false },
+    profile: { ...emptyProfile }
   };
   registeredUsers.set(email, user);
-
   return delay(toAuthResponse(email, user));
 }
 
 export async function login(request: AuthRequest): Promise<AuthResponse> {
   const email = request.email.trim().toLowerCase();
   const user = registeredUsers.get(email);
-
-  if (!user || user.password !== request.password) {
-    throw new Error('Nieprawidłowy email lub hasło.');
-  }
-
+  if (!user || user.password !== request.password) throw new Error('Nieprawidłowy email lub hasło.');
   return delay(toAuthResponse(email, user));
 }
 
 export async function getLegalConsents(token: string): Promise<LegalConsentState> {
   const user = registeredUsers.get(getEmailFromToken(token));
-  if (!user) {
-    throw new Error('Nie znaleziono użytkownika.');
-  }
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
   return delay({ ...user.consents });
 }
 
@@ -76,21 +79,27 @@ export async function saveLegalConsents(token: string, request: SaveLegalConsent
   if (!request.termsAccepted || !request.healthStatementAccepted || !request.privacyPolicyAccepted) {
     throw new Error('Zaakceptuj regulamin, oświadczenie zdrowotne i RODO.');
   }
-
-  const email = getEmailFromToken(token);
-  const user = registeredUsers.get(email);
-  if (!user) {
-    throw new Error('Nie znaleziono użytkownika.');
-  }
-
-  user.consents = {
-    ...request,
-    acceptedAt: new Date().toISOString(),
-    completed: true
-  };
-
+  const user = registeredUsers.get(getEmailFromToken(token));
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
+  user.consents = { ...request, acceptedAt: new Date().toISOString(), completed: true };
   return delay({ ...user.consents });
 }
+
+export async function getOnboardingProfile(token: string): Promise<OnboardingProfile> {
+  const user = registeredUsers.get(getEmailFromToken(token));
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
+  return { ...user.profile, trainingDays: [...user.profile.trainingDays], availableEquipment: [...user.profile.availableEquipment] };
+}
+
+
+export async function saveOnboardingProfile(token: string, request: SaveOnboardingProfileRequest): Promise<OnboardingProfile> {
+  const user = registeredUsers.get(getEmailFromToken(token));
+  if (!user) throw new Error('Nie znaleziono użytkownika.');
+  user.profile = { ...request, onboardingCompleted: true };
+  user.onboardingCompleted = true;
+  return { ...user.profile, trainingDays: [...user.profile.trainingDays], availableEquipment: [...user.profile.availableEquipment] };
+}
+
 
 export function seedAuthUser(email: string, password: string, onboardingCompleted: boolean, legalConsentsAccepted = true): void {
   registeredUsers.set(email.trim().toLowerCase(), {
@@ -102,6 +111,21 @@ export function seedAuthUser(email: string, password: string, onboardingComplete
       privacyPolicyAccepted: legalConsentsAccepted,
       acceptedAt: legalConsentsAccepted ? '2026-03-20T12:00:00.000Z' : null,
       completed: legalConsentsAccepted
-    }
+    },
+    profile: onboardingCompleted ? {
+      age: 31,
+      sex: 'mężczyzna',
+      weight: '76.5',
+      height: '182',
+      bodyType: 'średni',
+      activityHistory: 'regularnie',
+      trainingDays: ['MON', 'WED'],
+      goal: 'poprawić kondycję',
+      targetDistance: '10',
+      targetTime: '50:00',
+      foodIntolerances: 'laktoza',
+      availableEquipment: ['gumy'],
+      onboardingCompleted: true
+    } : { ...emptyProfile }
   });
 }

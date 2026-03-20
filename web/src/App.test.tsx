@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import App from './App';
 import { seedAuthUser } from './services/authService';
 
-describe('App auth flows', () => {
-  it('forces new user to accept legal consents before continuing', async () => {
+describe('App onboarding flows', () => {
+  it('forces new user through legal consents and multi-step onboarding to dashboard', async () => {
     const user = userEvent.setup();
     render(<App />);
 
@@ -16,16 +16,35 @@ describe('App auth flows', () => {
     await user.type(screen.getByLabelText('Powtórz hasło'), 'password123');
     await user.click(screen.getByRole('button', { name: 'Załóż konto' }));
 
-    expect(await screen.findByRole('heading', { name: /Regulamin, disclaimer i odpowiedzialność/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Akceptuję i kontynuuję/i })).toBeDisabled();
-
+    expect(await screen.findByRole('heading', { name: /Regulamin, disclaimer/i })).toBeInTheDocument();
     await user.click(screen.getByLabelText(/Akceptuję regulamin platformy/i));
     await user.click(screen.getByLabelText(/Oświadczam, że biorę odpowiedzialność/i));
     await user.click(screen.getByLabelText(/Akceptuję politykę prywatności/i));
     await user.click(screen.getByRole('button', { name: /Akceptuję i kontynuuję/i }));
 
-    expect(await screen.findByText(/Redirect:/)).toHaveTextContent('/onboarding');
-    expect(screen.getByText(/Zgody zaakceptowane:/)).toBeInTheDocument();
+    expect(await screen.findByText(/Ankieta startowa/i)).toBeInTheDocument();
+    await user.type(screen.getByLabelText('Wiek'), '31');
+    await user.selectOptions(screen.getByLabelText('Płeć'), 'mężczyzna');
+    await user.type(screen.getByLabelText('Waga (kg)'), '76.5');
+    await user.type(screen.getByLabelText('Wzrost (cm)'), '182');
+    await user.selectOptions(screen.getByLabelText('Typ sylwetki'), 'średni');
+    await user.selectOptions(screen.getByLabelText('Historia aktywności'), 'regularnie');
+    await user.click(screen.getByRole('button', { name: 'Dalej' }));
+
+    await user.click(screen.getByRole('button', { name: 'Pon' }));
+    await user.click(screen.getByRole('button', { name: 'Śr' }));
+    await user.selectOptions(screen.getByLabelText('Cel'), 'biegać szybciej');
+    await user.type(screen.getByLabelText('Docelowy dystans (opcjonalnie)'), '10');
+    await user.type(screen.getByLabelText('Docelowy czas (opcjonalnie)'), '50:00');
+    await user.click(screen.getByRole('button', { name: 'Dalej' }));
+
+    await user.type(screen.getByLabelText('Nietolerancje pokarmowe (opcjonalnie)'), 'laktoza');
+    await user.click(screen.getByRole('button', { name: 'gumy' }));
+    await user.click(screen.getByRole('button', { name: /Zapisz i przejdź do dashboardu/i }));
+
+    await waitFor(() => expect(screen.getByText(/Redirect:/)).toHaveTextContent('/dashboard'));
+    expect(screen.getByText(/Profil biegacza/i)).toBeInTheDocument();
+    expect(screen.getByText(/76.5 kg \/ 182 cm/i)).toBeInTheDocument();
   });
 
   it('logs in existing user and shows dashboard redirect', async () => {
