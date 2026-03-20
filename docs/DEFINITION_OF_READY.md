@@ -50,3 +50,4 @@ Agent Riker sprawdza każdy issue przed przypisaniem:
 
 **Pass** = issue dostaje label `ready` i może być przypisany.
 **Fail** = Riker komentuje co poprawić, dodaje label `needs-refinement`.
+**Too big** = Riker dzieli issue na sub-issues i tworzy je w GitHub. Oryginalny issue dostaje label `split`.
