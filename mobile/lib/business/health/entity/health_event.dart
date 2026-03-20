@@ -1,4 +1,4 @@
-part of 'health_bloc.dart';
+part of '../boundary/health_bloc.dart';
 
 sealed class HealthEvent extends Equatable {
   const HealthEvent();

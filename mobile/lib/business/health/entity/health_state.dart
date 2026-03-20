@@ -1,4 +1,4 @@
-part of 'health_bloc.dart';
+part of '../boundary/health_bloc.dart';
 
 class HealthState extends Equatable {
   const HealthState({required this.isLoading, this.snapshot});
