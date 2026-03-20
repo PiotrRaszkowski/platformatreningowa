@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:platformatreningowa/business/app_status/boundary/app_status_bloc.dart';
-import 'package:platformatreningowa/business/app_status/control/app_status_repository.dart';
-import 'package:platformatreningowa/business/app_status/entity/app_status_event.dart';
-import 'package:platformatreningowa/business/app_status/entity/app_status_state.dart';
+import 'package:platforma_treningowa_mobile/business/app_status/boundary/app_status_bloc.dart';
+import 'package:platforma_treningowa_mobile/business/app_status/control/app_status_repository.dart';
+import 'package:platforma_treningowa_mobile/business/app_status/entity/app_status_event.dart';
+import 'package:platforma_treningowa_mobile/business/app_status/entity/app_status_state.dart';
 
 class MockAppStatusRepository extends Mock implements AppStatusRepository {}
 

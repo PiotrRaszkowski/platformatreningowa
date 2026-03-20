@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../control/health_repository.dart';
 import '../entity/health_snapshot.dart';
 
-part 'health_event.dart';
-part 'health_state.dart';
+part '../entity/health_event.dart';
+part '../entity/health_state.dart';
 
 class HealthBloc extends Bloc<HealthEvent, HealthState> {
   HealthBloc(this._repository) : super(const HealthState.initial()) {
