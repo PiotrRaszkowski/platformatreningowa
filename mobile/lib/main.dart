@@ -8,6 +8,7 @@ import 'business/legal_consent/boundary/legal_consent_bloc.dart';
 import 'business/legal_consent/control/legal_consent_repository.dart';
 import 'business/onboarding/boundary/onboarding_bloc.dart';
 import 'business/onboarding/control/onboarding_repository.dart';
+import 'business/profile/control/profile_repository.dart';
 
 void main() {
   runApp(const PlatformaTreningowaBootstrap());
@@ -23,6 +24,7 @@ class PlatformaTreningowaBootstrap extends StatelessWidget {
         RepositoryProvider(create: (_) => AuthRepository()),
         RepositoryProvider(create: (_) => LegalConsentRepository()),
         RepositoryProvider(create: (_) => OnboardingRepository()),
+        RepositoryProvider(create: (_) => ProfileRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
