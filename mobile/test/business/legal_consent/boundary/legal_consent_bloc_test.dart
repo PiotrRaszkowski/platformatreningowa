@@ -8,8 +8,11 @@ void main() {
     blocTest<LegalConsentBloc, LegalConsentBlocState>(
       'requires all checkboxes before completing',
       build: () => LegalConsentBloc(LegalConsentRepository()),
+      seed: () => const LegalConsentBlocState(
+        consent: LegalConsentStateModel.initial(),
+        token: 'mock-token-new.runner@example.com',
+      ),
       act: (bloc) => bloc
-        ..add(const LegalConsentLoaded('mock-token-new.runner@example.com'))
         ..add(const LegalConsentTermsToggled(true))
         ..add(const LegalConsentHealthToggled(true))
         ..add(const LegalConsentSubmitted()),
