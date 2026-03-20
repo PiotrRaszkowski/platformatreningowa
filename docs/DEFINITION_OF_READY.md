@@ -29,9 +29,18 @@ Przykład:
 - Priorytet: `mvp` jeśli dotyczy
 - Nie: `epic` (epiki nie idą do devów)
 
-## 5. Brak blockerów
+## 5. Zależności (Depends on)
+- Jeśli issue zależy od innego — dodaj w body: `Depends on: #X, #Y`
+- Riker nie przypisze issue dopóki zależności nie są ukończone
+- Jeśli nie ma zależności — nie trzeba pisać nic
+
+## 6. Brak blockerów
 - Żadne wymagane zależności nie są w stanie "Open" bez implementacji
 - Jeśli zależy od innego taska — ten task musi być ukończony lub wyraźnie oznaczony jako niezależny
+
+## 7. Rozmiar
+- Issue musi być realizowalny w jednej sesji deva (1 branch, 1 PR)
+- Jeśli za duży — Riker dzieli na sub-issues
 
 ---
 
@@ -46,7 +55,8 @@ Agent Riker sprawdza każdy issue przed przypisaniem:
 | 3 | Ma AC z testami? | Komentarz: AC niekompletne — brak sposobu weryfikacji |
 | 4 | Każde AC jest testowalne? | Komentarz: wskazuje które AC nie ma testu |
 | 5 | Ma labels (typ)? | Dodaje brakujące |
-| 6 | Brak blockerów? | Komentarz: wskazuje blokery |
+| 6 | Zależności OK? | Komentarz: blokowane przez #X |
+| 7 | Rozmiar OK? | Split na sub-issues, label `split` |
 
 **Pass** = issue dostaje label `ready` i może być przypisany.
 **Fail** = Riker komentuje co poprawić, dodaje label `needs-refinement`.
