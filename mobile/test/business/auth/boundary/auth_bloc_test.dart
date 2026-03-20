@@ -30,6 +30,7 @@ void main() {
         email: 'existing.runner@example.com',
         password: 'password123',
       )),
+      wait: const Duration(milliseconds: 200),
       expect: () => [
         const AuthState(mode: AuthMode.login, isSubmitting: true),
         predicate<AuthState>((state) => state.authResult?.redirectTo == '/dashboard' && state.isSubmitting == false),
