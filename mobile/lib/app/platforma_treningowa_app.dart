@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../business/auth/boundary/auth_bloc.dart';
-import '../../business/auth/entity/auth_result.dart';
 import 'screens/auth_screen.dart';
 import 'screens/legal_consent_screen.dart';
 
@@ -34,7 +33,7 @@ class _PlatformaTreningowaAppState extends State<PlatformaTreningowaApp> {
                 setState(() {
                   acceptedAt = acceptedAtValue;
                 });
-                context.read<AuthBloc>().emitLegalConsentsAccepted();
+                context.read<AuthBloc>().add(const AuthLegalConsentsAccepted());
               },
             );
           }

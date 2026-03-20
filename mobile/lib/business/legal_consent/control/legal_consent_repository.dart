@@ -2,7 +2,7 @@ import '../entity/legal_consent_state.dart';
 
 class LegalConsentRepository {
   final Map<String, LegalConsentStateModel> _consents = {
-    'mock-token-existing.runner@example.com': const LegalConsentStateModel(
+    'mock-token-existing.runner@example.com': LegalConsentStateModel(
       termsAccepted: true,
       healthStatementAccepted: true,
       privacyPolicyAccepted: true,

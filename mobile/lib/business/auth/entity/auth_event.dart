@@ -26,3 +26,7 @@ final class AuthSubmitted extends AuthEvent {
   @override
   List<Object?> get props => [email, password, confirmPassword];
 }
+
+final class AuthLegalConsentsAccepted extends AuthEvent {
+  const AuthLegalConsentsAccepted();
+}
